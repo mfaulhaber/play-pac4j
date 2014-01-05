@@ -49,7 +49,7 @@ trait ScalaController extends Controller {
     val optionSessionId = newSession.get(Constants.SESSION_ID)
     logger.debug("getOrCreateSessionId : {}", optionSessionId)
     if (!optionSessionId.isDefined) {
-      newSession += Constants.SESSION_ID -> StorageHelper.generateSessionId()
+      newSession += Constants.SESSION_ID -> StorageHelper.getInstance().generateSessionId()
     }
     newSession
   }
@@ -139,7 +139,7 @@ trait ScalaController extends Controller {
     // save requested url to save
     val requestedUrlToSave = CallbackController.defaultUrl(targetUrl, request.uri)
     logger.debug("requestedUrlToSave : {}", requestedUrlToSave)
-    StorageHelper.saveRequestedUrl(sessionId, clientName, requestedUrlToSave);
+    StorageHelper.getInstance.saveRequestedUrl(sessionId, clientName, requestedUrlToSave);
     // context
     val scalaWebContext = new ScalaWebContext(request, newSession)
     // clients
@@ -165,7 +165,7 @@ trait ScalaController extends Controller {
     logger.debug("sessionId for profile : {}", sessionId)
     if (sessionId.isDefined) {
       // get the user profile
-      profile = StorageHelper.getProfile(sessionId.get)
+      profile = StorageHelper.getInstance.getProfile(sessionId.get)
       logger.debug("profile : {}", profile)
     }
     profile

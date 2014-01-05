@@ -20,9 +20,10 @@ import java.util.Map;
 
 import org.pac4j.core.context.BaseResponseContext;
 import org.pac4j.core.util.CommonHelper;
+import org.pac4j.play.CacheStorageHelper;
 import org.pac4j.play.Constants;
-import org.pac4j.play.StorageHelper;
 
+import org.pac4j.play.StorageHelper;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
 import play.mvc.Http.Session;
@@ -80,7 +81,7 @@ public class JavaWebContext extends BaseResponseContext {
     public Object getSessionAttribute(final String key) {
         String sessionId = this.session.get(Constants.SESSION_ID);
         if (CommonHelper.isNotBlank(sessionId)) {
-            return StorageHelper.get(sessionId, key);
+            return StorageHelper.getInstance().get(sessionId, key);
         }
         return null;
     }
@@ -88,7 +89,7 @@ public class JavaWebContext extends BaseResponseContext {
     public void setSessionAttribute(final String key, final Object value) {
         String sessionId = this.session.get(Constants.SESSION_ID);
         if (CommonHelper.isNotBlank(sessionId)) {
-            StorageHelper.save(sessionId, key, value);
+            StorageHelper.getInstance().save(sessionId, key, value);
         }
     }
     

@@ -38,10 +38,10 @@ public final class PlayLogoutHandler extends NoLogoutHandler {
         logger.debug("logoutRequest : {}", logoutRequest);
         final String ticket = StringUtils.substringBetween(logoutRequest, "SessionIndex>", "</");
         logger.debug("extract ticket : {}", ticket);
-        final String sessionId = (String) StorageHelper.get(ticket);
+        final String sessionId = (String) StorageHelper.getInstance().get(ticket);
         logger.debug("found sessionId : {}", sessionId);
-        StorageHelper.removeProfile(sessionId);
-        StorageHelper.remove(ticket);
+        StorageHelper.getInstance().removeProfile(sessionId);
+        StorageHelper.getInstance().remove(ticket);
     }
     
     @Override
@@ -50,6 +50,6 @@ public final class PlayLogoutHandler extends NoLogoutHandler {
         final JavaWebContext javaWebContext = (JavaWebContext) context;
         final String sessionId = javaWebContext.getSession().get(Constants.SESSION_ID);
         logger.debug("save sessionId : {}", sessionId);
-        StorageHelper.save(ticket, sessionId, Config.getProfileTimeout());
+        StorageHelper.getInstance().save(ticket, sessionId, Config.getProfileTimeout());
     }
 }

@@ -93,15 +93,15 @@ public class CallbackController extends Controller {
         logger.debug("profile : {}", profile);
         
         // get or create sessionId
-        final String sessionId = StorageHelper.getOrCreationSessionId(session());
+        final String sessionId = StorageHelper.getInstance().getOrCreationSessionId(session());
         
         // save user profile only if it's not null
         if (profile != null) {
-            StorageHelper.saveProfile(sessionId, profile);
+            StorageHelper.getInstance().saveProfile(sessionId, profile);
         }
         
         // get requested url
-        final String requestedUrl = StorageHelper.getRequestedUrl(sessionId, client.getName());
+        final String requestedUrl = StorageHelper.getInstance().getRequestedUrl(sessionId, client.getName());
         
         // retrieve saved request and redirect
         return redirect(defaultUrl(requestedUrl, Config.getDefaultSuccessUrl()));
@@ -116,7 +116,7 @@ public class CallbackController extends Controller {
         logger.debug("sessionId for logout : {}", sessionId);
         if (StringUtils.isNotBlank(sessionId)) {
             // remove user profile from cache
-            StorageHelper.removeProfile(sessionId);
+            StorageHelper.getInstance().removeProfile(sessionId);
             logger.debug("remove user profile for sessionId : {}", sessionId);
         }
         session().remove(Constants.SESSION_ID);

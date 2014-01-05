@@ -20,10 +20,7 @@ import org.pac4j.core.client.Clients;
 import org.pac4j.core.exception.RequiresHttpAction;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.play.CallbackController;
-import org.pac4j.play.Config;
-import org.pac4j.play.Constants;
-import org.pac4j.play.StorageHelper;
+import org.pac4j.play.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,11 +56,11 @@ public class JavaController extends CallbackController {
      */
     protected static String getRedirectionUrl(final String clientName, final String targetUrl) {
         // get or create session id
-        String sessionId = StorageHelper.getOrCreationSessionId(session());
+        String sessionId = StorageHelper.getInstance().getOrCreationSessionId(session());
         // requested url to save
         final String requestedUrlToSave = CallbackController.defaultUrl(targetUrl, request().uri());
         logger.debug("requestedUrlToSave : {}", requestedUrlToSave);
-        StorageHelper.saveRequestedUrl(sessionId, clientName, requestedUrlToSave);
+        StorageHelper.getInstance().saveRequestedUrl(sessionId, clientName, requestedUrlToSave);
         // clients
         Clients clients = Config.getClients();
         // no clients -> misconfiguration ?
@@ -93,7 +90,7 @@ public class JavaController extends CallbackController {
         logger.debug("sessionId for profile : {}", sessionId);
         if (StringUtils.isNotBlank(sessionId)) {
             // get the user profile
-            final CommonProfile profile = StorageHelper.getProfile(sessionId);
+            final CommonProfile profile = StorageHelper.getInstance().getProfile(sessionId);
             logger.debug("profile : {}", profile);
             return profile;
         }

@@ -15,12 +15,9 @@
  */
 package org.pac4j.play;
 
-import org.apache.commons.lang3.StringUtils;
 import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import play.cache.Cache;
 import play.mvc.Http.Session;
 
 /**
@@ -29,17 +26,36 @@ import play.mvc.Http.Session;
  * @author Jerome Leleu
  * @since 1.1.0
  */
-public final class StorageHelper {
+public abstract class StorageHelper {
     
     private static final Logger logger = LoggerFactory.getLogger(StorageHelper.class);
-    
+
+    private static volatile StorageHelper instance;
+
+    public static StorageHelper getInstance() {
+        if (instance == null) {
+            synchronized (StorageHelper.class) {
+                if (instance == null) {
+                    instance = new CacheStorageHelper();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public static void setInstance(StorageHelper _instance) {
+        synchronized (StorageHelper.class) {
+            instance = _instance;
+        }
+    }
+
     /**
      * Get a session identifier and generates it if no session exists.
      * 
      * @param session
      * @return the session identifier
      */
-    public static String getOrCreationSessionId(final Session session) {
+    public String getOrCreationSessionId(final Session session) {
         // get current sessionId
         String sessionId = session.get(Constants.SESSION_ID);
         logger.debug("retrieved sessionId : {}", sessionId);
@@ -59,7 +75,7 @@ public final class StorageHelper {
      * 
      * @return a session identifier
      */
-    public static String generateSessionId() {
+    public String generateSessionId() {
         return java.util.UUID.randomUUID().toString();
     }
     
@@ -69,7 +85,7 @@ public final class StorageHelper {
      * @param sessionId
      * @return the user profile
      */
-    public static CommonProfile getProfile(final String sessionId) {
+    public CommonProfile getProfile(final String sessionId) {
         if (sessionId != null) {
             return (CommonProfile) get(sessionId);
         }
@@ -82,7 +98,7 @@ public final class StorageHelper {
      * @param sessionId
      * @param profile
      */
-    public static void saveProfile(final String sessionId, final CommonProfile profile) {
+    public void saveProfile(final String sessionId, final CommonProfile profile) {
         if (sessionId != null) {
             save(sessionId, profile, Config.getProfileTimeout());
         }
@@ -93,7 +109,7 @@ public final class StorageHelper {
      * 
      * @param sessionId
      */
-    public static void removeProfile(final String sessionId) {
+    public void removeProfile(final String sessionId) {
         if (sessionId != null) {
             remove(sessionId);
         }
@@ -106,7 +122,7 @@ public final class StorageHelper {
      * @param clientName
      * @return the requested url
      */
-    public static String getRequestedUrl(final String sessionId, final String clientName) {
+    public String getRequestedUrl(final String sessionId, final String clientName) {
         return (String) get(sessionId, clientName + Constants.SEPARATOR + Constants.REQUESTED_URL);
     }
     
@@ -117,7 +133,7 @@ public final class StorageHelper {
      * @param clientName
      * @param requestedUrl
      */
-    public static void saveRequestedUrl(final String sessionId, final String clientName, final String requestedUrl) {
+    public void saveRequestedUrl(final String sessionId, final String clientName, final String requestedUrl) {
         save(sessionId, clientName + Constants.SEPARATOR + Constants.REQUESTED_URL, requestedUrl);
     }
     
@@ -128,13 +144,8 @@ public final class StorageHelper {
      * @param key
      * @return the object
      */
-    public static Object get(final String sessionId, final String key) {
-        if (sessionId != null) {
-            return get(sessionId + Constants.SEPARATOR + key);
-        }
-        return null;
-    }
-    
+    public abstract Object get(final String sessionId, final String key);
+
     /**
      * Save an object in storage.
      * 
@@ -142,32 +153,24 @@ public final class StorageHelper {
      * @param key
      * @param value
      */
-    public static void save(final String sessionId, final String key, final Object value) {
-        if (sessionId != null) {
-            save(sessionId + Constants.SEPARATOR + key, value, Config.getSessionTimeout());
-        }
-    }
-    
+    public abstract void save(final String sessionId, final String key, final Object value);
+
     /**
      * Remove an object in storage.
      * 
      * @param sessionId
      * @param key
      */
-    public static void remove(final String sessionId, final String key) {
-        remove(sessionId + Constants.SEPARATOR + key);
-    }
-    
+    public abstract void remove(final String sessionId, final String key);
+
     /**
      * Get an object from storage.
      * 
      * @param key
      * @return the object
      */
-    public static Object get(final String key) {
-        return Cache.get(getCacheKey(key));
-    }
-    
+    public abstract Object get(final String key);
+
     /**
      * Save an object in storage.
      * 
@@ -175,22 +178,13 @@ public final class StorageHelper {
      * @param value
      * @param timeout
      */
-    public static void save(final String key, final Object value, final int timeout) {
-        Cache.set(getCacheKey(key), value, timeout);
-    }
-    
+    public abstract void save(final String key, final Object value, final int timeout);
+
     /**
      * Remove an object from storage.
      * 
      * @param key
      */
-    public static void remove(final String key) {
-        save(key, null, 0);
-    }
+    public abstract void remove(final String key);
 
-    static String getCacheKey(final String key) {
-        return (StringUtils.isNotBlank(Config.getCacheKeyPrefix()))
-                ? Config.getCacheKeyPrefix() + ":" + key
-                : key;
-    }
 }
