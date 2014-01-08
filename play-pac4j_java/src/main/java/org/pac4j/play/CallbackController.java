@@ -97,7 +97,7 @@ public class CallbackController extends Controller {
         
         // save user profile only if it's not null
         if (profile != null) {
-            StorageHelper.getInstance().saveProfile(sessionId, profile);
+            StorageHelper.getInstance().saveProfile(request(), response(), session(), sessionId, profile);
         }
         
         // get requested url

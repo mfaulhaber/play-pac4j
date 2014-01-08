@@ -155,17 +155,17 @@ trait ScalaController extends Controller {
   /**
    * Returns the user profile.
    *
-   * @param request
+   * @param requestHeader
    * @return the user profile
    */
-  protected def getUserProfile(request: RequestHeader): CommonProfile = {
+  protected def getUserProfile(requestHeader: RequestHeader): CommonProfile = {
     // get the session id
     var profile: CommonProfile = null
-    val sessionId = request.session.get(Constants.SESSION_ID)
+    val sessionId = requestHeader.session.get(Constants.SESSION_ID)
     logger.debug("sessionId for profile : {}", sessionId)
     if (sessionId.isDefined) {
       // get the user profile
-      profile = StorageHelper.getInstance.getProfile(sessionId.get)
+      profile = StorageHelper.getInstance.getProfile(null, null, sessionId.get)
       logger.debug("profile : {}", profile)
     }
     profile

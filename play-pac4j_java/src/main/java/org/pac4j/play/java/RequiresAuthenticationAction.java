@@ -79,7 +79,7 @@ public final class RequiresAuthenticationAction extends Action<Result> {
         // get or create session id
         final String sessionId = StorageHelper.getInstance().getOrCreationSessionId(context.session());
         logger.debug("sessionId : {}", sessionId);
-        final CommonProfile profile = StorageHelper.getInstance().getProfile(sessionId);
+        final CommonProfile profile = StorageHelper.getInstance().getProfile(context.request(), context.session(), sessionId);
         logger.debug("profile : {}", profile);
         // has a profile -> access resource
         if (profile != null) {

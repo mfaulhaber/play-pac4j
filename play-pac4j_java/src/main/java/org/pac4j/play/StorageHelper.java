@@ -18,6 +18,7 @@ package org.pac4j.play;
 import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.mvc.Http;
 import play.mvc.Http.Session;
 
 /**
@@ -85,7 +86,7 @@ public abstract class StorageHelper {
      * @param sessionId
      * @return the user profile
      */
-    public CommonProfile getProfile(final String sessionId) {
+    public CommonProfile getProfile(final Http.Request request, final Session session, final String sessionId) {
         if (sessionId != null) {
             return (CommonProfile) get(sessionId);
         }
@@ -98,7 +99,7 @@ public abstract class StorageHelper {
      * @param sessionId
      * @param profile
      */
-    public void saveProfile(final String sessionId, final CommonProfile profile) {
+    public void saveProfile(final Http.Request request, final Http.Response response, final Session session, final String sessionId, final CommonProfile profile) {
         if (sessionId != null) {
             save(sessionId, profile, Config.getProfileTimeout());
         }

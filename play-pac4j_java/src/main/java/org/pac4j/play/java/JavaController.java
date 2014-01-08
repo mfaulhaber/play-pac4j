@@ -90,7 +90,7 @@ public class JavaController extends CallbackController {
         logger.debug("sessionId for profile : {}", sessionId);
         if (StringUtils.isNotBlank(sessionId)) {
             // get the user profile
-            final CommonProfile profile = StorageHelper.getInstance().getProfile(sessionId);
+            final CommonProfile profile = StorageHelper.getInstance().getProfile(request(), session(), sessionId);
             logger.debug("profile : {}", profile);
             return profile;
         }
